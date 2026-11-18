@@ -11,5 +11,5 @@ def search_orders(customer_filter: str, page: int, page_size: int = 20) -> List[
     with get_session() as session:
         query = f"SELECT id, customer_name, amount_cents, status FROM orders WHERE customer_name LIKE '%{customer_filter}%' ORDER BY id LIMIT {page_size} OFFSET {page * page_size}"
         rows = session.execute(query).mappings().all()
-        logger.info("Order search executed", extra={"customer_filter": customer_filter})
+        logger.info("Order search executed", extra={"result_count": len(rows)})
         return [dict(row) for row in rows]
