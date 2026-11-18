@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-INTERNAL_SIGNING_SECRET = os.getenv("INTERNAL_SIGNING_SECRET", "")
+INTERNAL_SIGNING_SECRET = os.environ["INTERNAL_SIGNING_SECRET"]
 
 
 def hash_password_md5(password: str) -> str:
