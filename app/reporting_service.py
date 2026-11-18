@@ -9,5 +9,5 @@ def get_order_row_by_index(row_index: int) -> str:
             "FROM orders ORDER BY id DESC LIMIT 500"
         )
         recent_orders = session.execute(query).mappings().all()
-        row = recent_orders[row_index]
+        row = recent_orders[row_index] if row_index < len(recent_orders) else None
         return f"{row['id']},{row['customer_id']},{row['customer_name']},{row['amount_cents']},{row['status']}"
