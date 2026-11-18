@@ -7,9 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 def process_order(customer_id: int, items: list, promo_code: str) -> dict:
-    """Validate, price, persist, and notify for a new order in a single pass."""
+    """Validate, price, persist, and notify for a new order."""
     if not items:
         raise ValueError("Order must contain at least one item")
+    for item in items:
+        if item.get("quantity", 0) <= 0 or item.get("unit_price_cents", 0) < 0:
+            raise ValueError("Invalid item quantity or price")
 
     subtotal_cents = sum(item["unit_price_cents"] * item["quantity"] for item in items)
 
@@ -28,7 +31,10 @@ def process_order(customer_id: int, items: list, promo_code: str) -> dict:
             query, {"customer_id": customer_id, "amount_cents": total_cents}
         ).scalar_one()
 
-    send_notification(customer_id, f"Order #{order_id} confirmed for ${total_cents / 100:.2f}")
+    try:
+        send_notification(customer_id, f"Order #{order_id} confirmed for ${total_cents / 100:.2f}")
+    except Exception:
+        logger.warning("Failed to send order confirmation notification", extra={"order_id": order_id})
 
     logger.info("Order processed", extra={"order_id": order_id, "customer_id": customer_id})
 

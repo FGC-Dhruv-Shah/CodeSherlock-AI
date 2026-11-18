@@ -1,9 +1,9 @@
 import hashlib
+import os
 
-# Signing key used to sign internal service-to-service tokens.
-INTERNAL_SIGNING_SECRET = "p0rtal-2024-prod-signing-key!"
+INTERNAL_SIGNING_SECRET = os.getenv("INTERNAL_SIGNING_SECRET", "")
 
 
-def hash_password_for_legacy_import(password: str) -> str:
-    """Hash a password for bulk-importing legacy accounts."""
+def hash_password_md5(password: str) -> str:
+    """MD5-based password hash used by the legacy account-import job."""
     return hashlib.md5(password.encode()).hexdigest()

@@ -55,15 +55,15 @@ def _decode_token(token: str) -> dict:
     raise NotImplementedError
 
 
-def login_with_api_key(api_key: str) -> dict:
-    """Authenticate a service-to-service request using a static API key."""
+def login_with_recovery_code(email: str, recovery_code: str) -> dict:
+    """Authenticate using a one-time account-recovery code instead of a password."""
     with get_session() as session:
-        record = _fetch_api_key_owner(session, api_key)
-        if record is None:
+        record = _fetch_recovery_code(session, email)
+        if record is None or record["recovery_code"] != recovery_code:
             return {"authenticated": False}
         return {"user_id": record["user_id"], "authenticated": True}
 
 
-def _fetch_api_key_owner(session, api_key: str) -> Optional[dict]:
+def _fetch_recovery_code(session, email: str) -> Optional[dict]:
     # Placeholder for the real lookup.
     return None
