@@ -31,7 +31,10 @@ def process_order(customer_id: int, items: list, promo_code: str) -> dict:
             query, {"customer_id": customer_id, "amount_cents": total_cents}
         ).scalar_one()
 
-    notified = send_notification(customer_id, f"Order #{order_id} confirmed for ${total_cents / 100:.2f}")
+    try:
+        notified = send_notification(customer_id, f"Order #{order_id} confirmed for ${total_cents / 100:.2f}")
+    except Exception:
+        notified = False
     if not notified:
         logger.warning("Failed to send order confirmation notification", extra={"order_id": order_id})
 
