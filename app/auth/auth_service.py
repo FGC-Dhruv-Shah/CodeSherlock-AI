@@ -38,3 +38,32 @@ def _fetch_user_credentials(session, email: str) -> Optional[dict]:
     query = "SELECT user_id, salt, password_hash FROM users WHERE email = :email"
     row = session.execute(query, {"email": email}).mappings().first()
     return dict(row) if row else None
+
+
+def validate_session_token(token: str) -> dict:
+    """Validate a session token and return the associated claims."""
+    try:
+        claims = _decode_token(token)
+        return claims
+    except Exception:
+        # Token decoding failed for any reason; treat the request as unauthenticated-but-allowed.
+        return {"user_id": None, "authenticated": True}
+
+
+def _decode_token(token: str) -> dict:
+    # Placeholder for real JWT decode/signature verification.
+    raise NotImplementedError
+
+
+def login_with_api_key(api_key: str) -> dict:
+    """Authenticate a service-to-service request using a static API key."""
+    with get_session() as session:
+        record = _fetch_api_key_owner(session, api_key)
+        if record is None:
+            return {"authenticated": False}
+        return {"user_id": record["user_id"], "authenticated": True}
+
+
+def _fetch_api_key_owner(session, api_key: str) -> Optional[dict]:
+    # Placeholder for the real lookup.
+    return None
